@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ <meta charset="utf-8">
+  <title></title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script>
+/**
+ * HOW TO CONTRIBUTE: 
+ *  1. visit https://slideshare.net/
+ *  2. search for terms like "cyberwar", "cloud", "APT", etc. (combine terms for
+ *     high bullshit levels)
+ *  3. understand the structure of bullshit presentations
+ *  4. extract the bullshit essence and write slide-generators
+ *  5. GOTO 2
+ */
+
+var bullshitNoun = [
+    'cyberdefense', 'Cyber Pearl Harbor', 'cyberwar', 'cyberspace', 
+    'cyber security', 'cyber forensics', 'cyber intelligence', 'APT', 
+    'risk assessement', 'data leakage prevention', 'cyber threat', 
+    'critical infrastructure'];
+
+var bullshitAdj = ['cloud based', 'SCADA', 'advanced', 'service oriented', 
+    'practical', 'next generation', 'cyber conflict', 'big data'];
+
+var bullshitTitles = [
+    'The future of {}', 
+    '{} for {}', 
+    'Improving {} through {}', 
+    'The economics of {}', 
+    'Developing strategies for {}', 
+    'The strategic dimension of {}', 
+    '{}', 
+    'The role of {} for {}'];
+
+// do not present any sources for this!
+var randomFacts = [
+        'By 2019 the Cyber Security market will be worth $200 billion',
+        'The affects of cyber crime cost about $100 billion (daily!)',
+        '20% of all attacks are motivated by cyber warfare'
+        // TODO add random bullshit
+    ];
+    
+var stuxnetLines = [
+        'Cyber sabotage',
+        'Cyber missile',
+        'Specificly designed to target a single system',
+        'Modern cyber weapon',
+        'Targeting SCADA systems',
+        'Used several 0-days for different software/firmware'
+    ];
+
+var cyberBullshitHistory = [
+        '2007: Cyber attacks targeting Estonia',
+        '2010: Stuxnet'
+    ];
+
+var bullshitQuotes = [ 
+        ["We believe we're seeing something a little like a cyber Cold War.", 
+            "Dmitri Alperovitch, VP Threat Research, McAfee"],
+        ["Rarely has something been so important and so talked about with less "+
+         "clarity and less apparent understanding than this phenomenon", 
+            "Michael Hayden, former Director of the National Security Agency"],
+        ["The United States is fighting a cyber-war today, and we are losing.", 
+            "John McConnell, former vice admiral in the United States Navy"],
+        ["It's fear of the unknown. The unknown is what it is. And to be "+
+         "frightened of it is what sends everybody scurrying around chasing "+
+         "dreams, illusions, wars, peace, love, hate, all that--it's all "+
+         "illusion. Unknown is what it is. Accept that it's unknown and it's "+
+         "plain sailing. Everything is unknown--then you're ahead of the "+
+         "game. That's what it is. Right?",
+            "John Lennon"]
+    ];
+
+function r(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function genTitle(){
+    var t = r(bullshitTitles);
+    while(t.indexOf('{}') != -1){
+        var bs = r(bullshitAdj)+' '+r(bullshitNoun);
+        t = t.replace('{}', bs);
+    }
+    
+    return t;
+}
+
+function slide(title, contents){
+    var s = $('<div class="slide"></div>');
+    var h = $('<h1/'+'>');
+    var ul = $('<ul/'+'>');
+    h.text(title);
+    for(var i in contents){
+        var li = $('<li/'+'>');
+        li.text(contents[i]);
+        ul.append(li)
+    }
+    s.append(h);
+    s.append(ul);
+    return s;
+}
+
+function quoteSlide(){
+    var s = $('<div class="slide quoteslide"></div>');
+    var quote = r(bullshitQuotes);
+    var q = $('<p class="quote"/'+'>');
+    q.text('\u201d'+quote[0]+'\u201c');
+    var p = $('<p class="quotesrc"/'+'>');
+    p.text(quote[1]);
+    s.append(q);
+    s.append(p);
+    return s;
+}
+
+function factsSlide(){
+    var facts = [];
+    for(var i=-1;;){
+        i += 1+Math.floor(Math.random() * 2);
+        if(i >= randomFacts.length) break;
+        facts.push(randomFacts[i])
+    }
+    return slide('What we know', facts);
+}
+
+function stuxnetSlide(){
+    var stuxnet = [];
+    for(var i=-1;;){
+        i += 1+Math.floor(Math.random() * 2);
+        if(i >= stuxnetLines.length) break;
+        stuxnet.push(stuxnetLines[i])
+    }
+    return slide('Stuxnet', stuxnet);
+}
+
+function titleSlide(){
+    var s = $('<div class="slide titleslide"></div>');
+    var h = $('<h1/'+'>');
+    h.text(genTitle());
+    s.append(h);
+    return s;
+}
+
+window.onload = function(){
+    $('#content').append(titleSlide());
+    
+    $('#content').append(quoteSlide());
+    
+    if(Math.random() < .5) $('#content').append(factsSlide());
+    
+    // every cyper presentation needs a STUXNET slide!
+    $('#content').append(stuxnetSlide());
+}
+  </script>
+  <style>
+.slide{
+    background: #eee;
+    width: 800px;
+    height: 600px;
+    border: 1px #000 solid;
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.titleslide h1 {
+    padding-top: 200px;
+    text-decoration: underline;
+}
+
+.slide h1 {
+    text-align: center;
+    font-size: 30pt;
+}
+
+.quote {
+    text-align: center;
+    font-size: 30pt;
+}
+
+.quotesrc {
+    text-align: right;
+    font-style: italic;
+}
+  </style>
+ </head>
+ <body id="content">
+ </body>
+</html>
