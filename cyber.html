@@ -9,22 +9,23 @@
  * HOW TO CONTRIBUTE: 
  *  1. visit https://slideshare.net/
  *  2. search for terms like "cyberwar", "cloud", "APT", etc. (combine terms for
- *     high bullshit levels)
- *  3. understand the structure of bullshit presentations
- *  4. extract the bullshit essence and write slide-generators
+ *     high  levels)
+ *  3. understand the structure of  presentations
+ *  4. extract the  essence and write slide-generators
  *  5. GOTO 2
  */
 
-var bullshitNoun = [
+var Noun = [
     'cyberdefense', 'Cyber Pearl Harbor', 'cyberwar', 'cyberspace', 
     'cyber security', 'cyber forensics', 'cyber intelligence', 'APT', 
     'risk assessement', 'data leakage prevention', 'cyber threat', 
-    'critical infrastructure'];
+    'critical infrastructure', 'cyber defense', 'cyber crime'];
 
-var bullshitAdj = ['cloud based', 'SCADA', 'advanced', 'service oriented', 
-    'practical', 'next generation', 'cyber conflict', 'big data'];
+var Adj = ['cloud based', 'SCADA', 'advanced', 'service oriented', 
+    'practical', 'next generation', 'cyber conflict', 'big data', 'hollistic',
+    'post-Snowden', 'secure by design'];
 
-var bullshitTitles = [
+var Titles = [
     'The future of {}', 
     '{} for {}', 
     'Improving {} through {}', 
@@ -39,7 +40,7 @@ var randomFacts = [
         'By 2019 the Cyber Security market will be worth $200 billion',
         'The affects of cyber crime cost about $100 billion (daily!)',
         '20% of all attacks are motivated by cyber warfare'
-        // TODO add random bullshit
+        // TODO add random 
     ];
     
 var stuxnetLines = [
@@ -51,12 +52,16 @@ var stuxnetLines = [
         'Used several 0-days for different software/firmware'
     ];
 
-var cyberBullshitHistory = [
+var cyberHistory = [
+        '1978: First SPAM mail sent',
+        '1971: First self-replicating program (Creeper system)',
+        '1994: Vladimir Levin stole $10.7 million from Citibank customers',
         '2007: Cyber attacks targeting Estonia',
         '2010: Stuxnet'
+        // TODO add history
     ];
 
-var bullshitQuotes = [ 
+var quotes = [ 
         ["We believe we're seeing something a little like a cyber Cold War.", 
             "Dmitri Alperovitch, VP Threat Research, McAfee"],
         ["Rarely has something been so important and so talked about with less "+
@@ -73,14 +78,76 @@ var bullshitQuotes = [
             "John Lennon"]
     ];
 
+var definitions = [
+        ['Cyberwarfare',
+         'Cyberwarfare refers to politically motivated hacking to conduct '+
+         'sabotage and espionage. It is a form of information warfare '+
+         'sometimes seen as analogous to conventional warfare.', 
+         'Wikipedia (https://en.wikipedia.org/wiki/Cyberwarfare)'],
+        ['Big data',
+         'Big data is the term for a collection of data sets so large and '+
+         'complex that it becomes difficult to process using on-hand database '+
+         'management tools or traditional data processing applications. '+
+         'The challenges include capture, curation, storage,[3] search, '+
+         'sharing, transfer, analysis and visualization.',
+         'Wikipedia (https://en.wikipedia.org/wiki/Big_data)'],
+        ['Critical infrastructure',
+         'Critical infrastructure is a term used by governments to describe '+
+         'assets that are essential for the functioning of a society and '+
+         'economy.',
+         'Wikipedia (https://en.wikipedia.org/wiki/Critical_infrastructure)']
+    ]
+
+var cyberScaryMethod = [
+        'eavesdropping',
+        'malware',
+        'phishing',
+        'social engineering',
+        'bot nets',
+        'spyware',
+        'others'
+    ]
+
+var cyberScaryTarget = [
+        'critical infrastructure',
+        'credit card data',
+        'bank accounts',
+        'e-government',
+        'transportation',
+        'telecommunications',
+        'others'
+    ]
+
 function r(arr){
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function rd(arr){
+    var idx = Math.floor(Math.random() * arr.length);
+    var el = arr[idx];
+    arr.splice(idx, 1);
+    return el;
+}
+
+function rselect(arr, p){
+    if(!p){
+        p = 0.5;
+    }
+    res = [];
+    
+    for(var i in arr){
+        if(Math.random() < p){
+            res.push(arr[i]);
+        }
+    }
+    
+    return res;
+}
+
 function genTitle(){
-    var t = r(bullshitTitles);
+    var t = r(Titles);
     while(t.indexOf('{}') != -1){
-        var bs = r(bullshitAdj)+' '+r(bullshitNoun);
+        var bs = r(Adj)+' '+r(Noun);
         t = t.replace('{}', bs);
     }
     
@@ -90,47 +157,74 @@ function genTitle(){
 function slide(title, contents){
     var s = $('<div class="slide"></div>');
     var h = $('<h1/'+'>');
-    var ul = $('<ul/'+'>');
     h.text(title);
-    for(var i in contents){
-        var li = $('<li/'+'>');
-        li.text(contents[i]);
-        ul.append(li)
+    
+    if(typeof(contents) == 'object'){
+        var body = $('<ul/'+'>');
+        for(var i in contents){
+            var li = $('<li/'+'>');
+            li.text(contents[i]);
+            body.append(li)
+        }
+    }else{
+        var body = $('<div/'+'>');
+        body.html(contents);
     }
     s.append(h);
-    s.append(ul);
+    s.append(body);
     return s;
 }
 
 function quoteSlide(){
     var s = $('<div class="slide quoteslide"></div>');
-    var quote = r(bullshitQuotes);
+    var quote = r(quotes);
     var q = $('<p class="quote"/'+'>');
     q.text('\u201d'+quote[0]+'\u201c');
-    var p = $('<p class="quotesrc"/'+'>');
+    var p = $('<p class="source"/'+'>');
     p.text(quote[1]);
     s.append(q);
     s.append(p);
     return s;
 }
 
-function factsSlide(){
-    var facts = [];
-    for(var i=-1;;){
-        i += 1+Math.floor(Math.random() * 2);
-        if(i >= randomFacts.length) break;
-        facts.push(randomFacts[i])
+function statisticsSlide(title, arr){
+    var statistics = rselect(arr, 0.8);
+    var factors = [];
+    var factorsSum = 0;
+    var lines = []
+    
+    for(var i in statistics){
+        var f = Math.random() + 0.1;
+        factors.push(f)
+        factorsSum += f;
     }
-    return slide('What we know', facts);
+    
+    for(var i in statistics){
+        lines.push((Math.round(factors[i] / factorsSum * 100)) + 
+                    '%: ' +
+                    statistics[i]);
+    }
+    
+    
+    return slide(title, lines);
+}
+
+function definitionSlide(){
+    def = rd(definitions);
+    return slide(def[0], '<div class="definition">'+def[1]+'</div>'+
+            '<div class="source">'+def[2]+'</div>');
+}
+
+function factsSlide(){
+    return slide('What we know', rselect(randomFacts));
+}
+
+function historySlide(){
+    return slide('History', rselect(cyberHistory, 0.8));
 }
 
 function stuxnetSlide(){
-    var stuxnet = [];
-    for(var i=-1;;){
-        i += 1+Math.floor(Math.random() * 2);
-        if(i >= stuxnetLines.length) break;
-        stuxnet.push(stuxnetLines[i])
-    }
+    var stuxnet = rselect(stuxnetLines);
     return slide('Stuxnet', stuxnet);
 }
 
@@ -142,15 +236,41 @@ function titleSlide(){
     return s;
 }
 
+function questionSlide(){
+    return slide('Questions', 
+        ['Who?',
+         'How?',
+         'Where?']);
+}
+
 window.onload = function(){
     $('#content').append(titleSlide());
     
     $('#content').append(quoteSlide());
     
-    if(Math.random() < .5) $('#content').append(factsSlide());
+    if(Math.random() < .8) $('#content').append(historySlide());
+    
+    var numDef = Math.floor(Math.random() * 2) + 2;
+    
+    for(var i=0; i<numDef; i++){
+        $('#content').append(definitionSlide());
+    }
+    
+    if(Math.random() < .8) $('#content').append(factsSlide());
     
     // every cyper presentation needs a STUXNET slide!
     $('#content').append(stuxnetSlide());
+    
+    if(Math.random() < .8) $('#content').append(questionSlide());
+    
+    if(Math.random() < .9) $('#content').append(
+            statisticsSlide('Attack methods', cyberScaryMethod)
+        );
+
+    if(Math.random() < .9) $('#content').append(
+            statisticsSlide('Targets', cyberScaryTarget)
+        );
+
 }
   </script>
   <style>
@@ -178,7 +298,7 @@ window.onload = function(){
     font-size: 30pt;
 }
 
-.quotesrc {
+.source {
     text-align: right;
     font-style: italic;
 }
