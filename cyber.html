@@ -15,6 +15,8 @@
  *  5. GOTO 2
  */
 
+var slideX = 0;
+
 var Noun = [
     'cyberdefense', 'Cyber Pearl Harbor', 'cyberwar', 'cyberspace', 
     'cyber security', 'cyber forensics', 'cyber intelligence', 'APT', 
@@ -155,7 +157,7 @@ function genTitle(){
 }
 
 function slide(title, contents){
-    var s = $('<div class="slide"></div>');
+    var s = $('<div></div>');
     var h = $('<h1/'+'>');
     h.text(title);
     
@@ -176,7 +178,7 @@ function slide(title, contents){
 }
 
 function quoteSlide(){
-    var s = $('<div class="slide quoteslide"></div>');
+    var s = $('<div class="quoteslide"></div>');
     var quote = r(quotes);
     var q = $('<p class="quote"/'+'>');
     q.text('\u201d'+quote[0]+'\u201c');
@@ -229,7 +231,7 @@ function stuxnetSlide(){
 }
 
 function titleSlide(){
-    var s = $('<div class="slide titleslide"></div>');
+    var s = $('<div class="titleslide"></div>');
     var h = $('<h1/'+'>');
     h.text(genTitle());
     s.append(h);
@@ -243,67 +245,52 @@ function questionSlide(){
          'Where?']);
 }
 
+function addSlide(s, p){
+    if(!p){
+        p = 1.0;
+    }
+    
+    if(Math.random() < p){
+        s.addClass('slide step');
+        s.attr('data-x', window.slideX);
+        window.slideX += 1000;
+        s.attr('data-y', '-1500');
+        $('#content').append(s);
+    }
+}
+
 window.onload = function(){
-    $('#content').append(titleSlide());
+    addSlide(titleSlide());
     
-    $('#content').append(quoteSlide());
+    addSlide(quoteSlide());
     
-    if(Math.random() < .8) $('#content').append(historySlide());
+    addSlide(historySlide(), 0.8);
     
     var numDef = Math.floor(Math.random() * 2) + 2;
     
     for(var i=0; i<numDef; i++){
-        $('#content').append(definitionSlide());
+        addSlide(definitionSlide());
     }
     
-    if(Math.random() < .8) $('#content').append(factsSlide());
+    addSlide(factsSlide(), 0.8);
     
     // every cyper presentation needs a STUXNET slide!
-    $('#content').append(stuxnetSlide());
+    addSlide(stuxnetSlide());
     
-    if(Math.random() < .8) $('#content').append(questionSlide());
+    addSlide(questionSlide(), 0.8);
     
-    if(Math.random() < .9) $('#content').append(
-            statisticsSlide('Attack methods', cyberScaryMethod)
-        );
-
-    if(Math.random() < .9) $('#content').append(
-            statisticsSlide('Targets', cyberScaryTarget)
-        );
+    addSlide(statisticsSlide('Attack methods', cyberScaryMethod), 0.9);
+    addSlide(statisticsSlide('Targets', cyberScaryTarget), 0.9);
+        
+    impress('content').init();
 
 }
   </script>
-  <style>
-.slide{
-    background: #eee;
-    width: 800px;
-    height: 600px;
-    border: 1px #000 solid;
-    margin-top: 10px;
-    font-size: 24px;
-}
-
-.titleslide h1 {
-    padding-top: 200px;
-    text-decoration: underline;
-}
-
-.slide h1 {
-    text-align: center;
-    font-size: 30pt;
-}
-
-.quote {
-    text-align: center;
-    font-size: 30pt;
-}
-
-.source {
-    text-align: right;
-    font-style: italic;
-}
-  </style>
+  <link href="style.css" rel="stylesheet" />
  </head>
- <body id="content">
+ <body>
+  <div id="content" data-transition-duration="500">
+  </div>
+  <script src="impress.js"></script>
  </body>
 </html>
