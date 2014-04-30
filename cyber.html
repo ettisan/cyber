@@ -120,6 +120,10 @@ var cyberScaryTarget = [
         'others'
     ]
 
+function firstCapital(str){
+    return str[0].toUpperCase() + str.substr(1);
+}
+
 function r(arr){
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -153,7 +157,7 @@ function genTitle(){
         t = t.replace('{}', bs);
     }
     
-    return t;
+    return firstCapital(t);
 }
 
 function slide(title, contents){
