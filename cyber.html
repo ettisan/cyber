@@ -135,16 +135,43 @@ function rd(arr){
     return el;
 }
 
-function rselect(arr, p){
-    if(!p){
-        p = 0.5;
-    }
-    res = [];
-    
+function _inArray(arr, el){
     for(var i in arr){
-        if(Math.random() < p){
-            res.push(arr[i]);
+        if(el == arr[i]){
+            return true;
         }
+    }
+    
+    return false;
+}
+
+function rselect(arr, minElements){
+    var resEls = [];
+
+    if(!minElements){
+        minElements = 1;
+    }
+
+    // get a number between minElements and arr.length
+    var nEls = Math.floor(minElements + 
+            Math.random() * (arr.length - minElements));
+    
+    while(resEls.length < nEls){
+        var elidx = Math.floor(Math.random() * arr.length);
+        
+        if(!_inArray(resEls, elidx)){
+            resEls.push(elidx);
+        }
+    }
+    
+    resEls.sort(function(a, b){
+        return a - b;
+    });
+    
+    var res = [];
+    
+    for(var i in resEls){
+        res.push(arr[resEls[i]]);
     }
     
     return res;
@@ -194,7 +221,7 @@ function quoteSlide(){
 }
 
 function statisticsSlide(title, arr){
-    var statistics = rselect(arr, 0.8);
+    var statistics = rselect(arr, 3);
     var factors = [];
     var factorsSum = 0;
     var lines = []
@@ -226,7 +253,7 @@ function factsSlide(){
 }
 
 function historySlide(){
-    return slide('History', rselect(cyberHistory, 0.8));
+    return slide('History', rselect(cyberHistory, 3));
 }
 
 function stuxnetSlide(){
